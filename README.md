@@ -29,13 +29,13 @@ To use this plugin, follow these steps:
 3. Clone the repository:
 
     ```bash
-    git clone https://github.com/Herusyahputra/moilapp-plugin-histologi-bat.git
+    git clone https://github.com/aziz-0110/histologi.git
     ```
 
 4. Navigate to the plugin directory:
 
     ```bash
-    cd moilapp-plugin-histologi-bat
+    cd histologi
     ```
 
 5. Run the main user interface:

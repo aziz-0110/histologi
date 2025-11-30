@@ -43,9 +43,3 @@ To use this plugin, follow these steps:
     ```bash
     python3 ui_main.py
     ```
-
-## Contact
-
-For any questions, suggestions, or concerns regarding the Plugin Application, please feel free to contact the repository owner at [herusyahputra@telkomuniversity.ac.id](mailto:herusyahputra@telkomuniversity.ac.id).
-
-

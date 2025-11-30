@@ -4,16 +4,57 @@ import shutil
 
 import cv2
 from PyQt5.QtWidgets import QApplication, QFileDialog
+from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtCore import Qt
 
 from rev_ui import Ui_Form
 from model import Model
+
+
+def set_light_theme(app):
+    # 1. Paksa Style 'Fusion' agar tampilan konsisten di semua OS/Distro
+    app.setStyle("Fusion")
+
+    # 2. Definisikan Palet Warna Light
+    palette = QPalette()
+
+    # Warna dasar background window (Abu-abu sangat muda/Putih standar)
+    palette.setColor(QPalette.Window, QColor(240, 240, 240))
+    palette.setColor(QPalette.WindowText, Qt.black)
+
+    # Warna untuk input fields (text box, dll)
+    palette.setColor(QPalette.Base, Qt.white)
+    palette.setColor(QPalette.AlternateBase, QColor(233, 233, 233))
+    palette.setColor(QPalette.ToolTipBase, Qt.white)
+    palette.setColor(QPalette.ToolTipText, Qt.black)
+    palette.setColor(QPalette.Text, Qt.black)
+
+    # Warna tombol
+    palette.setColor(QPalette.Button, QColor(240, 240, 240))
+    palette.setColor(QPalette.ButtonText, Qt.black)
+    palette.setColor(QPalette.BrightText, Qt.red)
+
+    # Warna Highlight (saat teks diblok atau item dipilih) - Biru standar Qt
+    palette.setColor(QPalette.Link, QColor(42, 130, 218))
+    palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+    palette.setColor(QPalette.HighlightedText, Qt.white)
+
+    # Warna disabled (opsional, biar tidak gelap)
+    palette.setColor(QPalette.Disabled, QPalette.Text, QColor(127, 127, 127))
+    palette.setColor(QPalette.Disabled, QPalette.ButtonText, QColor(127, 127, 127))
+
+    # 3. Terapkan palet ke aplikasi
+    app.setPalette(palette)
+
 
 class Controller:
     def __init__(self, view, model):
         super().__init__()
         self.ui = view
         self.model = model
-        self.render_image = False   # variabel agar tidak bisa load img ketika sudah ada img
+        self.render_image = (
+            False  # variabel agar tidak bisa load img ketika sudah ada img
+        )
         self.path_img_save = "img_tmp"
         self.setSylesheet()
 
@@ -21,15 +62,17 @@ class Controller:
         self.ui.btn_load.clicked.connect(lambda: self.load_image(0))
         self.ui.btn_clear.clicked.connect(lambda: self.clearImg())
         self.ui.btn_save.clicked.connect(lambda: self.save_img())
-        self.ui.btn_crop.clicked.connect(lambda : self.load_image(1))
+        self.ui.btn_crop.clicked.connect(lambda: self.load_image(1))
 
     def load_image(self, condition):
         if self.render_image:
             self.ui.message("Please clear images")
-            return    # kalo true bakal kembali
-        path_img = QFileDialog.getOpenFileName(filter="Image (*.png *.jpg *.apng *.avif *.gif *.jpeg *.svg *.tiff *.webp)")[0]
+            return  # kalo true bakal kembali
+        path_img = QFileDialog.getOpenFileName(
+            filter="Image (*.png *.jpg *.apng *.avif *.gif *.jpeg *.svg *.tiff *.webp)"
+        )[0]
         # path_img = './img_crop_1_1.png'
-        if path_img != '':
+        if path_img != "":
             self.render_image = True
             if condition == 0:
                 self.kondisi_ui(0)
@@ -69,7 +112,6 @@ class Controller:
         self.ui.update_img(self.model.img_count, self.ui.img_count)
         self.ui.update_img(self.graph, self.ui.img_grafik)
 
-
     def show_to_ui_img_crop(self, img_path):
         dir_img_save_path = f"{self.path_img_save}"
         # resolution = [660, 800, 1000]
@@ -78,7 +120,9 @@ class Controller:
 
         img = self.model.crop_img(dir_img_save_path, img_path)
         self.ui.update_img(img, self.ui.img_crop)
-        self.ui.message("The image is temporarily stored in the img folder \"img_tmp\"!!!")
+        self.ui.message(
+            'The image is temporarily stored in the img folder "img_tmp"!!!'
+        )
 
     def save_img(self):
         import datetime
@@ -88,7 +132,7 @@ class Controller:
             return
 
         if not os.path.exists("img_tmp"):
-            self.ui.message("Images are stored in \"img_save\" directory.")
+            self.ui.message('Images are stored in "img_save" directory.')
         else:
             if not os.path.exists("img_save"):
                 os.mkdir("img_save")
@@ -99,7 +143,7 @@ class Controller:
             shutil.move("img_tmp", "img_save")
             os.rename("img_save/img_tmp", f"img_save/{file_name}")
 
-            self.ui.message("Images are stored in \"img_save\" directory.")
+            self.ui.message('Images are stored in "img_save" directory.')
 
     def clearImg(self):
         self.ui.img_ori.clear()
@@ -113,22 +157,26 @@ class Controller:
         self.ui.totalCell.setText(" Total Cell : ")
         self.render_image = False
 
-        if (os.path.isdir(f"img_tmp")):
+        if os.path.isdir(f"img_tmp"):
             os.system(f"rm -R img_tmp")
+
 
 def main():
     app = QApplication(sys.argv)
+
+    set_light_theme(app)
 
     ui = Ui_Form()
     model = Model()
     Controller(ui, model)
 
-    ui.setWindowTitle('Histologi')
+    ui.setWindowTitle("Histologi")
     ui.resize(3500, 1600)
     # ui.resize(1080, 720)
 
     ui.show()
     sys.exit(app.exec_())
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
